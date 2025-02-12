@@ -4,7 +4,7 @@ import { Routes, Route } from "react-router-dom"
 import Home from "./Pages/Home"
 import EmiCalculator from './Components/EmiCalculator'
 const App = () => {
-  const [theme, setTheme] = useState('light'); // 'light' or 'dark'
+  const [theme, setTheme] = useState('dark'); // 'light' or 'dark'
 
   const toggleTheme = () => {
     setTheme(theme === 'light' ? 'dark' : 'light');
