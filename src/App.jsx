@@ -1,164 +1,30 @@
-import React, { useState } from "react";
-
-import Wrapper from "./components/Wrapper";
-import Screen from "./components/Screen";
-import ButtonBox from "./components/ButtonBox";
-import Button from "./components/Button";
-
-const btnValues = [
-  ["C", "+-", "%", "/"],
-  [7, 8, 9, "X"],
-  [4, 5, 6, "-"],
-  [1, 2, 3, "+"],
-  [0, ".", "="],
-];
-
-const toLocaleString = (num) =>
-  String(num).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, "$1 ");
-
-const removeSpaces = (num) => num.toString().replace(/\s/g, "");
-
+import React, { useState } from 'react'
+import ArithematicCalculator from './Components/ArithematicCalculator'
+import { Routes, Route } from "react-router-dom"
+import Home from "./Pages/Home"
+import EmiCalculator from './Components/EmiCalculator'
 const App = () => {
-  let [calc, setCalc] = useState({
-    sign: "",
-    num: 0,
-    res: 0,
-  });
+  const [theme, setTheme] = useState('light'); // 'light' or 'dark'
 
-  const numClickHandler = (e) => {
-    e.preventDefault();
-    const value = e.target.innerHTML;
-
-    if (removeSpaces(calc.num).length < 16) {
-      setCalc({
-        ...calc,
-        num:
-          calc.num === 0 && value === "0"
-            ? "0"
-            : removeSpaces(calc.num) % 1 === 0
-            ? toLocaleString(Number(removeSpaces(calc.num + value)))
-            : toLocaleString(calc.num + value),
-        res: !calc.sign ? 0 : calc.res,
-      });
-    }
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
-
-  const commaClickHandler = (e) => {
-    e.preventDefault();
-    const value = e.target.innerHTML;
-
-    setCalc({
-      ...calc,
-      num: !calc.num.toString().includes(".") ? calc.num + value : calc.num,
-    });
-  };
-
-  const signClickHandler = (e) => {
-    e.preventDefault();
-    const value = e.target.innerHTML;
-
-    setCalc({
-      ...calc,
-      sign: value,
-      res: !calc.res && calc.num ? calc.num : calc.res,
-      num: 0,
-    });
-  };
-
-  const equalsClickHandler = () => {
-    if (calc.sign && calc.num) {
-      const math = (a, b, sign) =>
-        sign === "+"
-          ? a + b
-          : sign === "-"
-          ? a - b
-          : sign === "X"
-          ? a * b
-          : a / b;
-
-      setCalc({
-        ...calc,
-        res:
-          calc.num === "0" && calc.sign === "/"
-            ? "Can't divide with 0"
-            : toLocaleString(
-                math(
-                  Number(removeSpaces(calc.res)),
-                  Number(removeSpaces(calc.num)),
-                  calc.sign
-                )
-              ),
-        sign: "",
-        num: 0,
-      });
-    }
-  };
-
-  const invertClickHandler = () => {
-    setCalc({
-      ...calc,
-      num: calc.num ? toLocaleString(removeSpaces(calc.num) * -1) : 0,
-      res: calc.res ? toLocaleString(removeSpaces(calc.res) * -1) : 0,
-      sign: "",
-    });
-  };
-
-  const percentClickHandler = () => {
-    let num = calc.num ? parseFloat(removeSpaces(calc.num)) : 0;
-    let res = calc.res ? parseFloat(removeSpaces(calc.res)) : 0;
-
-    setCalc({
-      ...calc,
-      num: (num /= Math.pow(100, 1)),
-      res: (res /= Math.pow(100, 1)),
-      sign: "",
-    });
-  };
-
-  const resetClickHandler = () => {
-    setCalc({
-      ...calc,
-      sign: "",
-      num: 0,
-      res: 0,
-    });
-  };
-
   return (
-    <div className="flex justify-center items-center mt-[100px]">
 
-    
-    <Wrapper >
-      <Screen value={calc.num ? calc.num : calc.res} />
-      <ButtonBox>
-        {btnValues.flat().map((btn, i) => {
-          return (
-            <Button
-              key={i}
-              className={btn === "=" ? "equals" : ""}
-              value={btn}
-              onClick={
-                btn === "C"
-                  ? resetClickHandler
-                  : btn === "+-"
-                  ? invertClickHandler
-                  : btn === "%"
-                  ? percentClickHandler
-                  : btn === "="
-                  ? equalsClickHandler
-                  : btn === "/" || btn === "X" || btn === "-" || btn === "+"
-                  ? signClickHandler
-                  : btn === "."
-                  ? commaClickHandler
-                  : numClickHandler
-              }
-            />
-          );
-        })}
-      </ButtonBox>
-    </Wrapper>
-    </div>
-  );
-};
+    <div className={`flex justify-center items-center w-[100vw] h-[100vh] ${theme==="light"?"bg-gray-700":"bg-gray-200"} `}>
+      <button
+          onClick={toggleTheme}
+          className={`fixed top-4 right-4  ${theme==="light"?"dark:hover:bg-gray-700 dark:text-gray-700 bg-gray-300 hover:text-gray-50":"text-gray-50 hover:text-black hover:bg-gray-200 dark:bg-gray-600"}    py-2 px-4 rounded  hover:border-gray-900 `}
+        >
+          Toggle Theme
+        </button>
+      <Routes>
+        <Route path="/" element={<Home theme={theme}/>} />
+        <Route path="/arithematic-calculator" element={<ArithematicCalculator theme={theme} />} />
+        <Route path="/emi-calculator" element={<EmiCalculator theme={theme}/>} />
+      </Routes>
+      </div>
+  )
+}
 
-export default App;
+export default App
